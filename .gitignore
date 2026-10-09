@@ -1,0 +1,60 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies and generated builds
+node_modules/
+dist/
+dist-ssr/
+.output/
+.vinxi/
+.tanstack/
+.nitro/
+.vercel/
+
+# Local environment variables and credentials
+*.local
+.env
+.env.*
+!.env.example
+.envrc
+.secrets/
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Tool caches and test output
+.cache/
+.vite/
+coverage/
+*.tsbuildinfo
+
+# Supabase CLI state (keep configuration and migrations)
+supabase/.temp/
+supabase/.branches/
+
+# Wrangler / Cloudflare
+.wrangler/
+.dev.vars
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.history/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+# Local previews and deployment helper artifacts
+artifacts/

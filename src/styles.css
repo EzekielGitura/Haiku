@@ -1,0 +1,837 @@
+@import "tailwindcss" source(none);
+@import "tw-animate-css";
+@source "../src";
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "DM Sans", sans-serif;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--primary-foreground);
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-ring: var(--primary);
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 8px;
+}
+:root {
+  --background: oklch(0.985 0.009 230);
+  --foreground: oklch(0.35 0.078 247);
+  --card: oklch(1 0 0);
+  --popover: oklch(0.99 0.005 240);
+  --primary: oklch(0.49 0.113 248);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.94 0.025 239);
+  --muted: oklch(0.96 0.017 238);
+  --muted-foreground: oklch(0.52 0.046 245);
+  --accent: oklch(0.925 0.031 238);
+  --destructive: oklch(0.57 0.17 20);
+  --border: oklch(0.85 0.035 240);
+  --sky-wash: oklch(0.965 0.025 237 / 54%);
+  --paper: oklch(0.99 0.006 240 / 89%);
+  --ink-soft: oklch(0.59 0.062 244);
+  --pink: oklch(0.7 0.075 15);
+  --wing: oklch(0.995 0.012 90);
+  --cherub-skin: oklch(0.91 0.058 53);
+  --cherub-hair: oklch(0.8 0.074 78);
+  --cherub-outline: oklch(0.6 0.064 69);
+  --cherub-blush: oklch(0.79 0.105 23);
+  --cherub-gold: oklch(0.7 0.096 73);
+  --poem-shadow: 0 18px 65px oklch(0.45 0.075 245 / 8%);
+}
+@layer base {
+  * {
+    border-color: var(--border);
+    letter-spacing: 0;
+  }
+  body {
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  button,
+  a,
+  input {
+    -webkit-tap-highlight-color: transparent;
+  }
+  button,
+  a {
+    touch-action: manipulation;
+  }
+  button {
+    cursor: pointer;
+  }
+  a {
+    text-decoration: none;
+  }
+  ::selection {
+    background: var(--accent);
+  }
+}
+.silvia-page {
+  position: relative;
+  isolation: isolate;
+  min-height: 100svh;
+  overflow: hidden;
+}
+.silvia-header {
+  height: 100px;
+  max-width: 1440px;
+  margin: auto;
+  padding: 0 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  position: relative;
+  z-index: 20;
+  border-bottom: 1px solid oklch(0.8 0.04 245 / 30%);
+}
+.wordmark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-serif);
+  font-size: 30px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.wordmark-dot {
+  color: var(--pink);
+}
+.silvia-header nav {
+  display: flex;
+  gap: 35px;
+  height: 100%;
+  align-items: center;
+  font-size: 13px;
+  color: var(--muted-foreground);
+}
+.silvia-header nav a {
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+}
+.silvia-header nav a::after {
+  content: "";
+  position: absolute;
+  bottom: 23px;
+  height: 1px;
+  background: var(--primary);
+  width: 0;
+  left: 0;
+  transition: width 0.25s;
+}
+.silvia-header nav a:hover::after,
+.silvia-header nav .nav-active::after {
+  width: 100%;
+}
+.silvia-header nav .nav-active {
+  color: var(--foreground);
+}
+.korean-endearment {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 12px 0 18px;
+}
+.korean-endearment span:first-child {
+  font-size: 17px;
+  color: var(--foreground);
+}
+.korean-endearment span:last-child {
+  font-family: var(--font-serif);
+  font-size: 15px;
+  font-style: italic;
+  color: var(--muted-foreground);
+}
+[lang="ko"] {
+  font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+}
+.pwa-controls {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pwa-install-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--border);
+  background: var(--paper);
+  color: var(--foreground);
+  border-radius: 30px;
+  padding: 10px 16px;
+  font-size: 11px;
+}
+.pwa-offline-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: var(--muted-foreground);
+}
+.pwa-install-help {
+  position: absolute;
+  z-index: 50;
+  top: calc(100% + 12px);
+  right: 0;
+  width: min(320px, calc(100vw - 44px));
+  padding: 23px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--popover);
+  box-shadow: var(--poem-shadow);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.pwa-install-help h2 {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  margin: 0 24px 10px 0;
+}
+.pwa-install-help p {
+  margin: 0 0 9px;
+}
+.pwa-help-close {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  border: 0;
+  padding: 5px;
+  background: transparent;
+  color: var(--foreground);
+}
+.pwa-help-note {
+  color: var(--muted-foreground);
+  font-size: 10px;
+}
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 4px;
+}
+.daily-main {
+  position: relative;
+  z-index: 2;
+  max-width: 1000px;
+  margin: 0 auto;
+  text-align: center;
+  padding: 48px 24px 70px;
+}
+.daily-eyebrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--muted-foreground);
+}
+.daily-eyebrow svg {
+  color: var(--primary);
+}
+.daily-main h1 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 77px;
+  line-height: 1.12;
+  margin: 17px 0 12px;
+}
+.daily-main h1 em {
+  font-weight: 400;
+}
+.daily-subtitle {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--muted-foreground);
+  margin: 0 0 34px;
+}
+.poem-paper {
+  position: relative;
+  margin: 0 auto;
+  max-width: 570px;
+  min-height: 329px;
+  background: var(--paper);
+  border: 1px solid var(--card);
+  border-radius: 6px;
+  box-shadow: var(--poem-shadow);
+  padding: 32px 30px 24px;
+  backdrop-filter: blur(7px);
+}
+.paper-corner {
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  border-color: var(--border);
+}
+.corner-tl {
+  left: 13px;
+  top: 13px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+  border-color: var(--border);
+}
+.corner-tr {
+  right: 13px;
+  top: 13px;
+  border-top: 1px solid;
+  border-right: 1px solid;
+  border-color: var(--border);
+}
+.corner-bl {
+  left: 13px;
+  bottom: 13px;
+  border-bottom: 1px solid;
+  border-left: 1px solid;
+  border-color: var(--border);
+}
+.corner-br {
+  right: 13px;
+  bottom: 13px;
+  border-bottom: 1px solid;
+  border-right: 1px solid;
+  border-color: var(--border);
+}
+.poem-date {
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-size: 9px;
+  color: var(--muted-foreground);
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  justify-content: center;
+}
+.poem-flourish {
+  margin: 18px auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--ink-soft);
+}
+.poem-flourish::before,
+.poem-flourish::after {
+  content: "";
+  width: 36px;
+  height: 1px;
+  background: var(--border);
+}
+.poem-lines {
+  font-family: var(--font-serif);
+  font-size: 31px;
+  font-weight: 500;
+  line-height: 1.65;
+  margin: 0;
+}
+.poem-lines p {
+  margin: 0;
+}
+.poem-signature {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-style: italic;
+  color: var(--muted-foreground);
+  margin-top: 22px;
+}
+.poem-count {
+  font-size: 8px;
+  color: var(--ink-soft);
+  position: absolute;
+  right: 28px;
+  bottom: 23px;
+  letter-spacing: 1px;
+}
+.poem-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 23px 0 22px;
+}
+.keep-poem-button {
+  height: 39px;
+  padding: 0 24px;
+  border-radius: 30px;
+  font-size: 11px;
+  font-weight: 400;
+  box-shadow: none;
+}
+.share-poem-button {
+  border-radius: 50%;
+  background: var(--paper);
+  border-color: var(--card);
+  width: 39px;
+  height: 39px;
+  box-shadow: none;
+}
+.next-poem {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  align-items: center;
+  font-size: 10px;
+  color: var(--muted-foreground);
+}
+.next-poem strong {
+  font-weight: 500;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+.next-poem .timezone {
+  font-size: 9px;
+  opacity: 0.75;
+  margin-left: 3px;
+}
+.love-note {
+  border-top: 1px solid var(--border);
+  max-width: 760px;
+  margin: 13px auto 0;
+  text-align: center;
+  padding: 34px 25px 38px;
+  position: relative;
+  z-index: 2;
+}
+.love-note-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.love-note p {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  font-style: italic;
+  line-height: 1.6;
+  margin: 15px 0 0;
+}
+.love-note .note-signature {
+  font-family: var(--font-sans);
+  font-size: 10px;
+  color: var(--muted-foreground);
+  font-style: normal;
+  margin-top: 12px;
+}
+.silvia-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 24px 64px;
+  border-top: 1px solid var(--border);
+  color: var(--ink-soft);
+  font-size: 9px;
+  position: relative;
+  z-index: 2;
+}
+.silvia-footer span:last-child {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cherubs {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 840px;
+  pointer-events: none;
+  z-index: 3;
+}
+.cherub {
+  position: absolute;
+  width: 160px;
+  transition:
+    transform 2.8s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity 2.8s;
+}
+.cherub-0 {
+  top: 255px;
+  left: calc(50% - 470px);
+  transform: rotate(-14deg);
+  animation: arrive-left 2.8s ease-out both;
+}
+.cherub-1 {
+  top: 370px;
+  right: calc(50% - 470px);
+  transform: rotate(12deg) scaleX(-1);
+  animation: arrive-right 3.3s ease-out both;
+}
+.cherub-2 {
+  top: 135px;
+  right: 7%;
+  width: 73px;
+  opacity: 0.5;
+  transform: scaleX(-1) rotate(15deg);
+}
+.cherub-3 {
+  top: 615px;
+  left: 8%;
+  width: 68px;
+  opacity: 0.4;
+  transform: rotate(-10deg);
+}
+.cherub-float {
+  animation: flutter 5s ease-in-out infinite;
+}
+.cherub-1 .cherub-float {
+  animation-delay: -2s;
+}
+.cherub-2 .cherub-float {
+  animation-delay: -1.5s;
+  animation-duration: 7s;
+}
+.cherub-3 .cherub-float {
+  animation-delay: -3s;
+  animation-duration: 6s;
+}
+.cherub svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 5px 12px oklch(0.55 0.05 245 / 10%));
+}
+.cherub-wing {
+  transform-box: fill-box;
+}
+.wing-left {
+  transform-origin: right bottom;
+  animation: wing-left 0.7s ease-in-out infinite alternate;
+}
+.wing-right {
+  transform-origin: left bottom;
+  animation: wing-right 0.7s ease-in-out infinite alternate;
+}
+.cherubs-background {
+  z-index: 1;
+}
+.cherubs-background .cherub-0 {
+  animation: none;
+  transform: translate(-100px, -110px) scale(0.43) rotate(-10deg);
+  opacity: 0.37;
+}
+.cherubs-background .cherub-1 {
+  animation: none;
+  transform: translate(110px, -150px) scale(-0.45, 0.45) rotate(10deg);
+  opacity: 0.37;
+}
+@keyframes flutter {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+  50% {
+    transform: translateY(-16px) rotate(3deg);
+  }
+}
+@keyframes wing-left {
+  from {
+    transform: rotate(-7deg) scaleX(0.94);
+  }
+  to {
+    transform: rotate(8deg) scaleX(1.06);
+  }
+}
+@keyframes wing-right {
+  from {
+    transform: rotate(7deg) scaleX(0.94);
+  }
+  to {
+    transform: rotate(-8deg) scaleX(1.06);
+  }
+}
+@keyframes arrive-left {
+  from {
+    transform: translate(-180px, -130px) scale(0.3) rotate(-20deg);
+    opacity: 0.2;
+  }
+  to {
+    transform: rotate(-14deg);
+    opacity: 1;
+  }
+}
+@keyframes arrive-right {
+  from {
+    transform: translate(180px, -130px) scale(-0.3, 0.3) rotate(20deg);
+    opacity: 0.2;
+  }
+  to {
+    transform: rotate(12deg) scaleX(-1);
+    opacity: 1;
+  }
+}
+.poem-status {
+  font-size: 11px;
+  line-height: 1.7;
+  max-width: 490px;
+  margin: 14px auto;
+  color: var(--muted-foreground);
+}
+.poem-status-error {
+  color: var(--destructive);
+}
+.collection-main {
+  min-height: calc(100svh - 168px);
+  max-width: 1000px;
+  margin: auto;
+  padding: 66px 32px 90px;
+  position: relative;
+  z-index: 4;
+}
+.collection-main h1 {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 57px;
+  text-align: center;
+  margin: 0 0 12px;
+}
+.collection-intro {
+  text-align: center;
+  color: var(--muted-foreground);
+  font-size: 12px;
+  margin-bottom: 45px;
+}
+.collection-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+.collection-poem {
+  padding: 30px;
+  background: var(--paper);
+  border-radius: 6px;
+  border: 1px solid var(--card);
+}
+.collection-poem h2 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  font-size: 27px;
+  margin: 16px 0;
+}
+.collection-poem time {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted-foreground);
+}
+.collection-poem p {
+  font-family: var(--font-serif);
+  font-size: 23px;
+  line-height: 1.7;
+  margin: 0;
+}
+.collection-empty {
+  text-align: center;
+  padding: 60px 20px;
+}
+.collection-empty svg {
+  margin: 0 auto 24px;
+}
+.collection-empty p {
+  font-family: var(--font-serif);
+  font-size: 26px;
+  margin: 0 0 25px;
+}
+@media (min-width: 1600px) {
+  .daily-main {
+    padding-top: 60px;
+  }
+  .daily-main h1 {
+    font-size: 84px;
+  }
+  .poem-paper {
+    min-height: 350px;
+    padding-top: 39px;
+  }
+  .love-note {
+    margin-top: 10px;
+  }
+}
+@media (max-width: 900px) {
+  .silvia-header {
+    padding: 0 28px;
+  }
+  .cherub-0 {
+    left: 1%;
+    width: 112px;
+    top: 240px;
+  }
+  .cherub-1 {
+    right: 1%;
+    width: 112px;
+    top: 520px;
+  }
+  .cherub-2 {
+    right: 3%;
+  }
+  .cherub-3 {
+    left: 3%;
+  }
+  .silvia-footer {
+    padding: 24px 28px;
+  }
+  .daily-main h1 {
+    font-size: 65px;
+  }
+}
+@media (max-width: 600px) {
+  .silvia-header {
+    height: 108px;
+    padding: 0 22px 27px;
+    gap: 10px;
+  }
+  .wordmark {
+    font-size: 26px;
+    gap: 8px;
+  }
+  .wordmark svg {
+    width: 17px;
+  }
+  .silvia-header nav {
+    position: absolute;
+    height: 33px;
+    bottom: 3px;
+    left: 22px;
+    gap: 25px;
+    font-size: 10px;
+  }
+  .silvia-header nav a::after {
+    bottom: 1px;
+  }
+  .pwa-install-button {
+    padding: 8px 11px;
+    font-size: 10px;
+  }
+  .pwa-offline-status {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    font-size: 8px;
+    white-space: nowrap;
+  }
+  .daily-main {
+    padding: 37px 22px 38px;
+  }
+  .daily-eyebrow {
+    font-size: 8px;
+    letter-spacing: 1.5px;
+  }
+  .daily-main h1 {
+    font-size: clamp(34px, 12vw, 55px);
+    margin: 17px 0 12px;
+  }
+  .daily-subtitle {
+    font-size: 11px;
+    margin: 0 auto 32px;
+    max-width: 255px;
+  }
+  .poem-paper {
+    min-height: 304px;
+    padding: 31px 15px 25px;
+  }
+  .poem-lines {
+    font-size: clamp(18px, 5.4vw, 24px);
+    line-height: 1.75;
+  }
+  .poem-date {
+    font-size: 8px;
+    letter-spacing: 1px;
+  }
+  .poem-signature {
+    font-size: 15px;
+  }
+  .poem-count {
+    font-size: 7px;
+    right: 24px;
+  }
+  .cherub-0 {
+    width: 85px;
+    top: 245px;
+    left: -20px;
+  }
+  .cherub-1 {
+    width: 82px;
+    top: 550px;
+    right: -16px;
+  }
+  .cherub-2 {
+    width: 42px;
+    top: 151px;
+    right: 5%;
+  }
+  .cherub-3 {
+    width: 42px;
+    top: 664px;
+    left: 4%;
+  }
+  .cherubs-background .cherub-0 {
+    transform: translate(20px, -50px) scale(0.5);
+  }
+  .cherubs-background .cherub-1 {
+    transform: translate(-20px, -50px) scale(-0.5, 0.5);
+  }
+  .next-poem {
+    font-size: 9px;
+    gap: 5px;
+  }
+  .next-poem .timezone {
+    font-size: 8px;
+  }
+  .love-note {
+    margin: 5px 22px 0;
+    padding: 30px 5px;
+  }
+  .love-note p {
+    font-size: 21px;
+  }
+  .silvia-footer {
+    padding: 22px;
+    flex-direction: column;
+    gap: 12px;
+    text-align: center;
+  }
+  .collection-main {
+    padding: 45px 22px 65px;
+  }
+  .collection-main h1 {
+    font-size: 46px;
+  }
+  .collection-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

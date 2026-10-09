@@ -1,0 +1,14 @@
+.env
+.env.*
+.vercel
+.git
+.agents
+.codex
+node_modules
+.output
+.nitro
+.tanstack
+dist
+dist-ssr
+artifacts
+*.log

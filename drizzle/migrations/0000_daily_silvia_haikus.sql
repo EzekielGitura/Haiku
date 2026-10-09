@@ -1,0 +1,11 @@
+CREATE TABLE public.daily_poems (day date PRIMARY KEY, title text, line_one text, line_two text, line_three text, status text NOT NULL DEFAULT 'pending', error_message text, created_at timestamptz NOT NULL DEFAULT now());
+GRANT SELECT ON public.daily_poems TO anon, authenticated;
+GRANT ALL ON public.daily_poems TO service_role;
+ALTER TABLE public.daily_poems ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Completed poems are readable" ON public.daily_poems FOR SELECT TO anon, authenticated USING (status = 'complete');
+CREATE TABLE public.poem_generation_state (id boolean PRIMARY KEY DEFAULT true, paused boolean NOT NULL DEFAULT false, reason text);
+GRANT ALL ON public.poem_generation_state TO service_role;
+ALTER TABLE public.poem_generation_state ENABLE ROW LEVEL SECURITY;
+CREATE FUNCTION public.claim_daily_poem(p_day date) RETURNS boolean LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$ BEGIN INSERT INTO public.daily_poems(day) VALUES(p_day) ON CONFLICT DO NOTHING; RETURN FOUND; END; $$;
+REVOKE ALL ON FUNCTION public.claim_daily_poem(date) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.claim_daily_poem(date) TO service_role;

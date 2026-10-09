@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="theme-color" content="#92b4ce" />
+    <title>For Silvia · Offline</title>
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100svh;
+        display: grid;
+        place-items: center;
+        padding: 2rem;
+        color: #29435b;
+        background: linear-gradient(#92b4ce, #e8f0f6);
+        font-family: Georgia, serif;
+        text-align: center;
+      }
+      main {
+        max-width: 34rem;
+        width: 100%;
+      }
+      h1 {
+        font-size: clamp(2.5rem, 8vw, 4rem);
+        font-weight: 400;
+      }
+      article {
+        margin: 2rem 0;
+        padding: 2.5rem 1.5rem;
+        background: #fffdf7;
+        border-radius: 1rem;
+        box-shadow: 0 12px 40px #29435b16;
+      }
+      .status,
+      .date {
+        font-family: system-ui, sans-serif;
+        font-size: 0.8rem;
+        letter-spacing: 0.04em;
+      }
+      .lines {
+        font-size: clamp(1.1rem, 4vw, 1.5rem);
+        line-height: 1.7;
+      }
+      .signature {
+        font-style: italic;
+      }
+      a {
+        display: inline-block;
+        color: inherit;
+        background: #fffdf7;
+        border: 1px solid #29435b30;
+        border-radius: 2rem;
+        padding: 0.8rem 1.5rem;
+        text-decoration: none;
+      }
+      a:focus-visible {
+        outline: 3px solid #29435b;
+        outline-offset: 4px;
+      }
+      [hidden] {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="status">OFFLINE · MY DAILY CONFESSION, SAVED</p>
+      <h1>For you, Silvia.</h1>
+      <article id="poem" hidden aria-label="Last saved haiku">
+        <p class="date" id="date"></p>
+        <div class="lines">
+          <p id="line-one"></p>
+          <p id="line-two"></p>
+          <p id="line-three"></p>
+        </div>
+        <p class="signature" lang="ko">나의 다정한 항복, 언제나 너를 사랑해.</p>
+      </article>
+      <p id="message">Connect to the internet to open your first daily haiku.</p>
+      <a href="/">Try opening today’s haiku</a>
+    </main>
+    <script>
+      try {
+        const stored = JSON.parse(localStorage.getItem("for-silvia-complete-poems-v1") || "[]");
+        const poems = Array.isArray(stored)
+          ? stored
+              .filter(
+                (poem) =>
+                  poem &&
+                  /^\d{4}-\d{2}-\d{2}$/.test(poem.day) &&
+                  ["line_one", "line_two", "line_three"].every(
+                    (key) =>
+                      typeof poem[key] === "string" && poem[key].trim() && poem[key].length <= 200,
+                  ),
+              )
+              .sort((a, b) => b.day.localeCompare(a.day))
+          : [];
+        const poem = poems[0];
+        if (poem) {
+          document.getElementById("date").textContent =
+            "Last saved poem · " +
+            new Intl.DateTimeFormat("en-GB", {
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+              timeZone: "UTC",
+            }).format(new Date(poem.day + "T12:00:00Z"));
+          for (const [id, key] of [
+            ["line-one", "line_one"],
+            ["line-two", "line_two"],
+            ["line-three", "line_three"],
+          ])
+            document.getElementById(id).textContent = poem[key];
+          document.getElementById("poem").hidden = false;
+          document.getElementById("message").textContent =
+            "This is your last saved haiku. Reconnect to find today’s poem.";
+        }
+      } catch {
+        /* Storage may be unavailable. */
+      }
+    </script>
+  </body>
+</html>
