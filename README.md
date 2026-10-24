@@ -19,7 +19,7 @@ Development is at http://localhost:3000. Production builds a Node server in `.ou
 
 ## Daily writing
 
-Set `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and `OPENAI_API_KEY` on the server. `OPENAI_MODEL` is optional (default `gpt-4.1-mini`). These names have no `VITE_` prefix: service credentials must stay on the server. The API request goes directly to OpenAI's Responses API and uses strict JSON output. The model is instructed to count 5/7/5 syllables; structural validation does not guarantee a perfect phonetic count.
+Set `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and `GROQ_API_KEY` on the server. `GROQ_MODEL` is optional (default `openai/gpt-oss-120b`, hosted by GroqCloud). These names have no `VITE_` prefix: service credentials must stay on the server. The API request goes directly to [Groq's Responses API](https://console.groq.com/docs/responses-api) and uses strict JSON output, low reasoning effort, and one request per claimed date. The model name identifies the open-weight GPT-OSS model; no OpenAI API account or key is required. Groq's Responses API is currently beta. The model is instructed to count 5/7/5 syllables; structural validation does not guarantee a perfect phonetic count.
 
 For a new database, apply `drizzle/migrations/0000_daily_silvia_haikus.sql` once in the Supabase SQL editor. The date primary key and service-only `claim_daily_poem` function prevent concurrent visitors from buying duplicate generations. Completed poems are read using the publishable client under RLS. Pending records and pause state are private. Preserve existing rows when moving to a separately managed database.
 
@@ -43,7 +43,9 @@ After an online visit, the PWA caches its public pages/assets and up to 365 comp
 
 The included `vercel.json` selects TanStack Start and schedules `/api/daily-poem` once daily at 21:00 UTC. Vite selects Nitro's Vercel adapter on Vercel, uses Node 24, and allows 120 seconds for server requests. Local `npm start` continues to use the Node server adapter.
 
-Set `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, and a random `CRON_SECRET` in the project's **Production** environment variables. Keep the service key, OpenAI key, and scheduler secret sensitive. Redeploy after changing variables. No `VITE_` variables are needed.
+Set `SUPABASE_URL`, `SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `GROQ_API_KEY`, and a random `CRON_SECRET` in the project's **Production** environment variables. Keep the service key, Groq key, and scheduler secret sensitive. Redeploy after changing variables. No `VITE_` variables are needed.
+
+In **Settings → Environment Variables → Add Environment Variable**, choose **Secret**, enter `GROQ_API_KEY` as the key, paste your GroqCloud key into Value, select **Production**, and save. Use a Free-plan key if you want to stay within Groq's free quota. `GROQ_MODEL` does not need to be added unless changing the default model. For local development, put the key in the ignored `.env` file; `.env.example` contains placeholders only.
 
 From this folder, deploy using the Vercel CLI:
 

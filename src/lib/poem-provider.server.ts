@@ -1,7 +1,7 @@
 import type { Poem } from "./poem-rules";
 
-// Responses and Structured Outputs support: https://developers.openai.com/api/docs/models/gpt-4.1-mini
-export const DEFAULT_POEM_MODEL = "gpt-4.1-mini";
+// Responses and strict Structured Outputs: https://console.groq.com/docs/responses-api
+export const DEFAULT_POEM_MODEL = "openai/gpt-oss-120b";
 export const POEM_FAILURE_MESSAGE =
   "Today's poem could not be written. A new day brings another little verse.";
 export const POEM_PAUSED_MESSAGE =
@@ -33,6 +33,7 @@ const PAUSE_CODES = new Set([
   "organization_usage_limit_exceeded",
   "billing_hard_limit_reached",
   "billing_not_active",
+  "blocked_api_access",
   "model_not_found",
   "invalid_api_key",
   "permission_denied",
@@ -101,6 +102,21 @@ export function samePoem(
   );
 }
 
+function promptHistory(recent: Poem[]): string {
+  // Compact whole poems into a bounded prompt; duplicate checks still use every saved verse.
+  const entries: (string | null)[][] = [];
+  const encoder = new TextEncoder();
+  let bytes = 2;
+  for (const { title, line_one, line_two, line_three } of recent.slice(0, 60)) {
+    const entry = [title, line_one, line_two, line_three];
+    const entryBytes = encoder.encode(JSON.stringify(entry)).length + (entries.length ? 1 : 0);
+    if (bytes + entryBytes > 6_000) break;
+    entries.push(entry);
+    bytes += entryBytes;
+  }
+  return JSON.stringify(entries);
+}
+
 export async function writeDailyPoem({
   day,
   recent,
@@ -117,15 +133,16 @@ export async function writeDailyPoem({
   let response: Response;
   try {
     // Exactly one request after a durable daily claim. Do not retry timeouts or other failures.
-    response = await request("https://api.openai.com/v1/responses", {
+    response = await request("https://api.groq.com/openai/v1/responses", {
       method: "POST",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
       signal: AbortSignal.timeout(45_000),
       body: JSON.stringify({
         model,
-        store: false,
         stream: false,
-        max_output_tokens: 512,
+        // Includes GPT-OSS reasoning tokens. Groq does not support the request parameter store.
+        reasoning: { effort: "low" },
+        max_output_tokens: 2_048,
         input: [
           {
             role: "system",
@@ -140,7 +157,7 @@ export async function writeDailyPoem({
           },
           {
             role: "user",
-            content: `Compose a fresh verse for ${day}, the daily date in GMT+3. This date is a unique composition key, not text to include in the verse. There is no preset rotation or ending date.\nRecent verses to avoid repeating:\n${JSON.stringify(recent)}`,
+            content: `Compose a fresh verse for ${day}, the daily date in GMT+3. This date is a unique composition key, not text to include in the verse. There is no preset rotation or ending date.\nRecent verses to avoid repeating, each [title, first line, second line, third line]:\n${promptHistory(recent)}`,
           },
         ],
         text: {

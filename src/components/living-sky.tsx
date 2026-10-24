@@ -1,5 +1,6 @@
 import { useEffect, useId, useState, type CSSProperties } from "react";
 import { moonLitPath, skyAt, type SkyState } from "@/lib/sky-rules";
+import { CLOUD_PATHS } from "@/lib/sky-art";
 import "@/sky.css";
 
 // A shared first frame keeps server markup and client hydration identical.
@@ -60,12 +61,9 @@ function Cloud({ kind, id }: { kind: (typeof CLOUDS)[number]["kind"]; id: string
       </defs>
       {kind === "cumulus" && (
         <>
+          <path d={CLOUD_PATHS.cumulus} fill={`url(#${id})`} />
           <path
-            d="M38 188C15 166 30 132 69 128C54 89 95 59 139 71C147 26 209 17 239 48C267 6 334 17 347 63C397 42 441 67 447 102C480 83 518 107 520 134C558 126 594 154 578 180C568 198 546 203 515 204H86C65 204 47 199 38 188Z"
-            fill={`url(#${id})`}
-          />
-          <path
-            d="M63 157C88 139 113 136 135 142M173 88C191 82 210 87 220 101M290 64C304 60 324 69 328 82M428 145C448 134 471 139 482 149"
+            d={CLOUD_PATHS.cumulusHighlights}
             stroke="var(--sky-cloud)"
             strokeWidth="12"
             strokeLinecap="round"
@@ -89,21 +87,9 @@ function Cloud({ kind, id }: { kind: (typeof CLOUDS)[number]["kind"]; id: string
       )}
       {kind === "cirrus" && (
         <g stroke="var(--sky-cloud)" strokeLinecap="round">
-          <path
-            d="M14 144C135 86 241 126 336 78C394 52 456 76 583 31"
-            strokeWidth="11"
-            opacity="0.42"
-          />
-          <path
-            d="M67 164C161 132 227 151 328 111C400 80 460 103 547 62"
-            strokeWidth="6"
-            opacity="0.32"
-          />
-          <path
-            d="M161 177C242 153 283 162 371 126C423 105 461 121 503 98"
-            strokeWidth="3"
-            opacity="0.22"
-          />
+          <path d={CLOUD_PATHS.cirrus[0]} strokeWidth="11" opacity="0.42" />
+          <path d={CLOUD_PATHS.cirrus[1]} strokeWidth="6" opacity="0.32" />
+          <path d={CLOUD_PATHS.cirrus[2]} strokeWidth="3" opacity="0.22" />
         </g>
       )}
     </svg>

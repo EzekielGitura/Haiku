@@ -1,4 +1,5 @@
 import { GMT_OFFSET_MS, silviaDay } from "./poem-rules";
+import { DAY_SKY_COLORS } from "./sky-art";
 
 const DAY_MS = 86_400_000;
 const TAU = Math.PI * 2;
@@ -65,7 +66,7 @@ const MOON_PHASES: MoonPhase[] = [
 ];
 const NIGHT: Palette = ["#10192f", "#293957", "#697087"];
 const DAWN: Palette = ["#666b98", "#c598b0", "#f5d0af"];
-const DAY: Palette = ["#82b2da", "#c0dced", "#f4eee7"];
+const DAY: Palette = [DAY_SKY_COLORS.top, DAY_SKY_COLORS.middle, DAY_SKY_COLORS.horizon];
 const DUSK: Palette = ["#586182", "#bc8c9c", "#f3bf99"];
 
 function clamp(value: number, min = 0, max = 1) {
@@ -219,12 +220,12 @@ export function skyAt(now: Date): SkyState {
       middle: palette[1],
       horizon: palette[2],
       cloud: blendColor(
-        blendColor("#8390ac", "#ffffff", daylight),
+        blendColor("#8390ac", DAY_SKY_COLORS.cloud, daylight),
         morning ? "#f7dedc" : "#f5d4c4",
         twilight * 0.7,
       ),
-      cloudShade: blendColor("#52607d", "#b8cddb", daylight),
-      sun: blendColor("#ffd9a1", "#fff3cb", 1 - twilight),
+      cloudShade: blendColor("#52607d", DAY_SKY_COLORS.cloudShade, daylight),
+      sun: blendColor("#ffd9a1", DAY_SKY_COLORS.sun, 1 - twilight),
     },
   };
 }

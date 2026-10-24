@@ -11,6 +11,7 @@ import {
   parsePoemResponse,
   POEM_FAILURE_MESSAGE,
   POEM_PAUSED_MESSAGE,
+  writeDailyPoem,
   type WrittenPoem,
 } from "./poem-provider.server";
 import type { Poem } from "./poem-rules";
@@ -101,15 +102,27 @@ describe("daily generation persistence", () => {
     expect(await run()).toEqual({ poem: { day, ...verse }, pending: false, error: null });
     expect(request).toHaveBeenCalledTimes(1);
     const [url, init] = request.mock.calls[0] as unknown as [string, RequestInit];
-    expect(url).toBe("https://api.openai.com/v1/responses");
+    expect(url).toBe("https://api.groq.com/openai/v1/responses");
     const body = JSON.parse(String(init.body));
-    expect(body).toMatchObject({ model: DEFAULT_POEM_MODEL, store: false, stream: false });
+    expect(DEFAULT_POEM_MODEL).toBe("openai/gpt-oss-120b");
+    expect(body).toMatchObject({
+      model: DEFAULT_POEM_MODEL,
+      stream: false,
+      reasoning: { effort: "low" },
+      max_output_tokens: 2_048,
+    });
+    expect(body).not.toHaveProperty("store");
     expect(body.text.format).toMatchObject({ type: "json_schema", strict: true });
+    expect(body.text.format.schema).toMatchObject({
+      required: ["title", "line_one", "line_two", "line_three"],
+      additionalProperties: false,
+    });
     expect(body.input[1].content).toContain(day);
     expect(new Headers(init.headers).get("Authorization")).toBe("Bearer test-secret");
   });
 
   it.each([
+    [400, { code: "blocked_api_access" }],
     [401, { code: "invalid_api_key" }],
     [403, { code: "permission_denied" }],
     [429, { code: "insufficient_quota" }],
@@ -220,6 +233,23 @@ describe("daily generation persistence", () => {
     expect(request).toHaveBeenCalledTimes(1);
   });
 
+  it("keeps a token-truncated response terminal instead of requesting a replacement", async () => {
+    const { store, records } = memoryStore();
+    const request = vi.fn(async () =>
+      jsonResponse({
+        status: "incomplete",
+        incomplete_details: { reason: "max_output_tokens" },
+        output: responsePayload().output,
+      }),
+    );
+    expect((await runDailyGeneration({ store, day, apiKey: "test-secret", request })).error).toBe(
+      POEM_FAILURE_MESSAGE,
+    );
+    expect(records.get(day)?.status).toBe("failed");
+    await runDailyGeneration({ store, day, apiKey: "test-secret", request });
+    expect(request).toHaveBeenCalledTimes(1);
+  });
+
   it("writes a new future date without any preset end date", async () => {
     const { store } = memoryStore();
     const request = vi.fn(async () => jsonResponse(responsePayload()));
@@ -242,6 +272,21 @@ describe("Responses payload validation", () => {
   it("extracts only a complete structured poem", () => {
     expect(parsePoemResponse(responsePayload())).toEqual(verse);
   });
+  it("ignores Groq reasoning output and returns only the public poem fields", () => {
+    expect(
+      parsePoemResponse({
+        ...responsePayload(),
+        output: [
+          {
+            type: "reasoning",
+            status: "completed",
+            content: [{ type: "reasoning_text", text: "private reasoning" }],
+          },
+          ...responsePayload().output,
+        ],
+      }),
+    ).toEqual(verse);
+  });
   it.each([
     { status: "incomplete", output: [] },
     { status: "failed", error: { message: "private error" } },
@@ -260,5 +305,32 @@ describe("Responses payload validation", () => {
     },
   ])("rejects malformed, refused or incomplete output without leaking it (%j)", (payload) => {
     expect(() => parsePoemResponse(payload)).toThrow(POEM_FAILURE_MESSAGE);
+  });
+});
+
+describe("Groq prompt budget", () => {
+  it("keeps whole recent poems within a bounded history without sending storage metadata", async () => {
+    const recent: Poem[] = Array.from({ length: 60 }, (_, index) => ({
+      day: `2026-08-${String(index + 1).padStart(2, "0")}`,
+      title: `Recent ${index} ${"é".repeat(100)}`,
+      line_one: "a".repeat(120),
+      line_two: "b".repeat(120),
+      line_three: "c".repeat(120),
+    }));
+    const request = vi.fn(async () => jsonResponse(responsePayload()));
+    await writeDailyPoem({ day, recent, apiKey: "test-secret", request });
+    const body = JSON.parse(
+      String((request.mock.calls[0] as unknown as [string, RequestInit])[1].body),
+    );
+    const history = body.input[1].content.split("\n").at(-1);
+    const entries = JSON.parse(history);
+    const first = recent[0]!;
+    expect(new TextEncoder().encode(history).length).toBeLessThanOrEqual(6_000);
+    expect(entries.length).toBeGreaterThan(0);
+    expect(entries.length).toBeLessThan(60);
+    expect(entries[0]).toEqual([first.title, first.line_one, first.line_two, first.line_three]);
+    expect(entries.every((entry: unknown[]) => entry.length === 4)).toBe(true);
+    expect(history).not.toContain(first.day);
+    expect(request).toHaveBeenCalledTimes(1);
   });
 });

@@ -165,7 +165,7 @@ export async function getDailyPoem(): Promise<DailyPoemResult> {
   return runDailyGeneration({
     store: supabasePoemStore(supabaseAdmin),
     day: silviaDay(),
-    apiKey: process.env["OPENAI_API_KEY"],
-    model: process.env["OPENAI_MODEL"] || DEFAULT_POEM_MODEL,
+    apiKey: process.env["GROQ_API_KEY"],
+    model: process.env["GROQ_MODEL"] || DEFAULT_POEM_MODEL,
   });
 }

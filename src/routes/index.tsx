@@ -18,6 +18,7 @@ import { Cherubs } from "@/components/cherubs";
 import { SilviaHeader, SilviaFooter } from "@/components/silvia-shell";
 import { generateToday } from "@/lib/poems.functions";
 import { poemsOptions } from "@/lib/poem-query";
+import { downloadPoem, POEM_DOWNLOAD_MESSAGE } from "@/lib/poem-download";
 import { useOnlineStatus, readOfflinePoems, saveOfflinePoems } from "@/lib/pwa";
 import {
   silviaDay,
@@ -59,6 +60,8 @@ function Index() {
   const [error, setError] = useState("");
   const [shared, setShared] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const writePoem = useServerFn(generateToday);
   useEffect(() => {
     setNow(new Date());
@@ -150,16 +153,20 @@ function Index() {
         setError("Sharing is unavailable. You can save the poem instead.");
     }
   }
-  function save() {
-    const content = `For Silvia\n${dateLabel}\n${endearment.korean}\n\n${poem.line_one}\n${poem.line_two}\n${poem.line_three}\n\n언제나 너를 사랑해\n`;
-    const url = URL.createObjectURL(new Blob([content], { type: "text/plain;charset=utf-8" }));
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = `for-silvia-${poem.day || "welcome"}.txt`;
-    anchor.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    setSaved(true);
-    setTimeout(() => setSaved(false), 3000);
+  async function save() {
+    if (saving) return;
+    setSaving(true);
+    setSaved(false);
+    setSaveError("");
+    try {
+      await downloadPoem(poem, dateLabel);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 5000);
+    } catch {
+      setSaveError("Your poem image couldn’t be saved. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   }
   return (
     <div className="silvia-page">
@@ -226,9 +233,19 @@ function Index() {
           </p>
         )}
         <div className="poem-actions">
-          <Button className="keep-poem-button" onClick={save}>
+          <Button
+            className="keep-poem-button"
+            onClick={save}
+            disabled={saving}
+            aria-busy={saving}
+            title="Save this haiku as a blue-sky image"
+          >
             {saved ? <Check size={14} /> : <Heart size={14} strokeWidth={1.5} />}
-            {saved ? "Saved with love" : "Keep this little poem"}
+            {saving
+              ? "Preparing your keepsake…"
+              : saved
+                ? "Saved with love"
+                : "Keep this little poem"}
             <Download size={12} strokeWidth={1.4} />
           </Button>
           <Button
@@ -242,6 +259,16 @@ function Index() {
             {shared ? <Check size={14} /> : <Share2 size={14} strokeWidth={1.4} />}
           </Button>
         </div>
+        {saved && (
+          <p className="poem-status" role="status">
+            {POEM_DOWNLOAD_MESSAGE}
+          </p>
+        )}
+        {saveError && (
+          <p className="poem-status poem-status-error" role="alert">
+            {saveError}
+          </p>
+        )}
         <div className="next-poem">
           <Clock3 size={12} strokeWidth={1.4} />
           <span>Next daily haiku at midnight</span>
